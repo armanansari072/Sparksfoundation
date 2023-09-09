@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Bank System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Simple Bank System</h1>
+    </header>
+    
+    <main>
+        <section id="customer-list">
+            <h2>View All Customers</h2>
+            <ul>
+                <!-- Customer list items will be dynamically generated here -->
+            </ul>
+        </section>
+        
+        <section id="customer-details">
+            <!-- Customer details will be displayed here when selected -->
+        </section>
+        
+        <section id="transfer-money">
+            <!-- Transfer money form will be displayed here -->
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2023 Simple Bank System</p>
+    </footer>
+    <script>
+        // Dummy customer data
+        const customers = [
+            { id: 1, name: "Arman", balance: 12000.0 },
+            { id: 2, name: "Raju", balance: 15300.0 },
+            { id: 3, name: "Kisan", balance: 15800.0 },
+            { id: 4, name: "Akshay", balance: 33500.0 },
+            { id: 5, name: "Niraj", balance: 88500.0 },
+            { id: 6, name: "akshay", balance: 65500.0 },
+            { id: 7, name: "Rupesh", balance: 57500.0 },
+            // Add more customers here
+        ];
+    
+        // Function to populate the customer list
+        function populateCustomerList() {
+            const customerList = document.querySelector("#customer-list ul");
+            customerList.innerHTML = "";
+    
+            customers.forEach(customer => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `<a href="#" onclick="viewCustomer(${customer.id})">${customer.name} - Balance: $${customer.balance.toFixed(2)}</a>`;
+                customerList.appendChild(listItem);
+            });
+        }
+    
+        // Function to view customer details
+        function viewCustomer(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            const customerDetails = document.querySelector("#customer-details");
+            customerDetails.innerHTML = `<h2>Customer Details</h2>
+                                          <p>Name: ${customer.name}</p>
+                                          <p>Balance: $${customer.balance.toFixed(2)}</p>
+                                          <button onclick="showTransferForm(${customerId})">Transfer Money</button>`;
+        }
+    
+        // Function to display the transfer money form
+        function showTransferForm(senderId) {
+            const transferMoney = document.querySelector("#transfer-money");
+            transferMoney.innerHTML = `<h2>Transfer Money</h2>
+                                        <form onsubmit="transferMoney(${senderId}); return false;">
+                                            <label for="receiverId">Select customer to transfer to:</label>
+                                            <select id="receiverId">
+                                                <!-- Options will be added here dynamically -->
+                                            </select>
+                                            <br>
+                                            <label for="amount">Amount:</label>
+                                            <input type="number" id="amount" step="0.01" required>
+                                            <br>
+                                            <button type="submit">Transfer</button>
+                                        </form>`;
+            
+            // Populate the receiver dropdown with customer names
+            const receiverDropdown = document.querySelector("#receiverId");
+            customers.forEach(customer => {
+                if (customer.id !== senderId) {
+                    const option = document.createElement("option");
+                    option.value = customer.id;
+                    option.textContent = customer.name;
+                    receiverDropdown.appendChild(option);
+                }
+            });
+        }
+    
+        // Function to simulate money transfer
+        function transferMoney(senderId) {
+            const amount = parseFloat(document.querySelector("#amount").value);
+            const receiverId = parseInt(document.querySelector("#receiverId").value);
+    
+            // Simulate the transfer (update balances)
+            const sender = customers.find(c => c.id === senderId);
+            const receiver = customers.find(c => c.id === receiverId);
+    
+            if (!sender || !receiver || isNaN(amount) || amount <= 0 || sender.balance < amount) {
+                alert("Invalid transfer details. Please check and try again.");
+            } else {
+                sender.balance -= amount;
+                receiver.balance += amount;
+                populateCustomerList(); // Update customer list after transfer
+                viewCustomer(senderId); // Show sender's details again
+                alert("Transfer successful!");
+            }
+        }
+    
+        // Initial population of the customer list
+        populateCustomerList();
+    </script>
+    
+</body>
+</html>
